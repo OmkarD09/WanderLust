@@ -37,20 +37,64 @@ app.listen(port, () => {
   console.log(`listening at http://localhost:${port}`);
 });
 
-app.get('/testlistings',(req, res) => {
-    let newListing = new Listing({
-        title: "Test Listing",
-        description: "This is a test listing",
-        image: "",
-        price: 100,
-        location: "Test Location",
-        country: "Test Country"
-    });
-    newListing.save().then(listing => {
-        res.send(listing);
-    }).catch(err => {
-        res.send(err);
-    });
+
+//Index Route
+app.get('/listings', async (req, res) => {
+    const listings =  await Listing.find({});
+    res.render('listings/index.ejs', { listings });
+});
+
+app.get('/listings/new', (req, res) => {
+    res.render('listings/new.ejs');
+});
+
+app.post('/listings', async (req, res) => {
+    const newListing = new Listing(req.body);
+    await newListing.save();
+    res.redirect('/listings');
+});
+
+app.get("/listings/:id/edit", async (req, res) => {
+    const listing = await Listing.findById(req.params.id);
+    res.render('listings/edit.ejs', { listing });
+});
+
+app.put('/listings/:id', async (req, res) => {
+    const { id } = req.params;
+    const listing = await Listing.findByIdAndUpdate(id, req.body, { new: true });
+    res.redirect(`/listings/${listing._id}`);
+});
+
+app.get('/listings/:id', async (req, res) => {
+    const listing = await Listing.findById(req.params.id);
+    res.render('listings/show.ejs', { listing });
+});
+
+app.delete('/listings/:id', async (req, res) => {
+    const { id } = req.params;
+    await Listing.findByIdAndDelete(id);
+    res.redirect('/listings');
 });
 
 
+
+
+
+
+
+
+// app.get('/testlistings',(req, res) => {
+//     let newListing = new Listing({
+//         title: "Test Listing",
+//         description: "This is a test listing",
+//         image: "",
+//         price: 100,
+//         location: "Test Location",
+//         country: "Test Country"
+//     });
+//     newListing.save().then(listing => {
+//         res.send(listing);
+//     }).catch(err => {
+//         res.send(err);
+//     });
+// });
