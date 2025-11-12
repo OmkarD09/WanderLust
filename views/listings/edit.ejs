@@ -1,11 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Listing</title>
-</head>
+<% layout('/layouts/boilerplate') %>
+
+
 <body>
+    
     <h2>Edit Listing</h2>
     <form action="/listings/<%= listing._id %>?_method=PUT" method="POST">
 
@@ -29,5 +26,6 @@
 
         <button type="submit">Update Listing</button>
     </form>
+
+    <%- include('../includes/footer.ejs') %>
 </body>
-</html>

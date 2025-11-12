@@ -6,6 +6,9 @@ const ejs = require('ejs');
 const methodOverride = require('method-override');
 const path = require('path');
 const Listing = require('./models/listing.js');
+const ejsMate = require('ejs-mate');
+
+
 
 
 async function main() {
@@ -14,6 +17,7 @@ async function main() {
 
 app.set("views", path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
+app.engine('ejs', ejsMate);
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
