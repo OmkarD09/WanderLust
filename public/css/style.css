@@ -2,6 +2,24 @@
     border-radius: 10px;
     height: 4.5 rem;
 }
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: #ffffff;
+}
+
+
+footer {
+    background-color: #f2f2f2;
+    padding: 20px 0;
+    text-align: center;
+    margin-top: 50px;
+    width: 100%;
+}
 
 .fa-compass {
     color: #fe424d;
@@ -11,3 +29,63 @@
 .nav-link {
     color: #222222 !important;
 }
+
+
+.f-info-links a {
+    text-decoration: none;
+    font-size: small;
+    color: #222222;
+    
+}
+
+.f-info-links a:hover {
+    text-decoration: underline;
+
+}
+
+.soc {
+    color: #222222;
+    font-size: 1.2rem;
+}
+
+/* Cards */
+.card{
+    border: none !important;
+    margin-bottom: 2rem;
+    transition: transform 0.3s ease-in-out;
+    /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
+    padding-bottom: 1rem !important;
+
+
+}
+.card:hover {
+transform: scale(1.05);
+}
+
+.card-img-top {
+    border-radius: 1rem !important;
+    width: 100% !important;
+    object-fit: cover;
+}
+
+.card-body {
+    padding: 0 !important
+    
+}
+
+body a {
+    text-decoration: none;
+}
+
+.card-text p{
+    font-size: 400 !important;;
+}
+
+/* New Listing Page */
+
+
+.add-btn {
+    background-color: #fe424d !important;
+    color: white;
+    border: none !important;
+}   
