@@ -1,24 +1,32 @@
 <% layout('/layouts/boilerplate') %>
 <body>
-    
-    <ul>
-        <li><h1><%= listing.title %></h1></li>
-        <li><p>Description: <%= listing.description %></p></li>
-        <li><p>Image: <img src="<%= listing.image.url %>" alt="<%= listing.title %>" /></p></li>
-        <li><p>Price: $<%= listing.price %></p></li>
-        <li><p>Location: <%= listing.location %></p></li>
-        <li><p>Country: <%= listing.country %></p></li>
-    </ul>
-
-    <form action="/listings/<%= listing._id %>/edit" method="GET"">
-        <button type="submit">Edit Listing</button>
-    </form>
-
-    <form action="/listings/<%= listing._id %>?_method=DELETE" method="POST">
-        <button type="submit">Delete Listing</button>
-    </form>
-
+    <div class="row mt-3">
+        <div class="col-8 offset-2">
+            <h3>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                <%= listing.title %></h3>
+        </div>
+        <div class="col-6 offset-3 show-card">
+            <img src="<%= listing.image.url %>" class="card-img-top show-img" alt="<%= listing.title %>" style="height: 25rem;">
+            <div class="card-body">
+              <p class="card-text">
+                <%= listing.description %> <br>
+                &#8377; <%= listing.price.toLocaleString("en-IN") %> <br>
+                <%= listing.location %> <br>
+                <%= listing.country %>
+              </p>
+              <br>
+            </div>
+        </div>
+        <br>
+        <div class="btns col-6 offset-3 mb-3">
+            <a href="/listings/<%= listing._id %>/edit" class="btn btn-dark edit-btn">Edit</a>
+            &nbsp; &nbsp; &nbsp;
+            
+            <form style="display: inline;" action="/listings/<%= listing._id %>?_method=DELETE" method="POST">
+                <button class="btn btn-dark delete-btn">Delete</button>
+            </form>
+        </div>
+    </div>
     <%- include('../includes/footer.ejs') %>
 
 </body>
-
