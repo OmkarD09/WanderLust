@@ -9,40 +9,41 @@
             <form action="/listings" method="POST" class="needs-validation" novalidate>
                 <div class="mb-2">
                     <label for="title" class="form-label">Title:</label>
-                    <input type="text" id="title" name="title" class="form-control" required placeholder="Add a catchy Title"><br>
-                    <div class="valid-feedback">Looks good!</div>
+                    <input type="text" id="title" name="title" class="form-control" placeholder="Add a catchy Title" required>
+                    <div class="invalid-feedback">Please provide a title.</div>
                 </div>
 
                 <div class="mb-2">
                     <label for="description" class="form-label">Description:</label>
-                    <textarea id="description" name="description" class="form-control" required placeholder="Add a detailed description"></textarea><br>
-                    <div class="valid-feedback">Looks good!</div>
+                    <textarea id="description" name="description" class="form-control" required placeholder="Add a detailed description"></textarea>
+                    <div class="invalid-feedback">Please provide a description.</div>
                 </div>
 
                 <div class="mb-2">
                     <label for="image.url" class="form-label">Image URL:</label>
-                    <input type="text" id="imageUrl" name="image.url" class="form-control"><br>
+                    <input type="text" id="imageUrl" name="image.url" class="form-control">
+                    
                 </div>
 
                 <div class="row">
                     <div class="mb-2 col-md-4">
                         <label for="price" class="form-label">Price:</label>
-                        <input type="number" id="price" name="price" class="form-control" required ><br>
-                        <div class="invalid-feedback">Price should be valid.</div>
+                        <input  id="price" name="price" class="form-control" required >
+                        <div class="invalid-feedback">Please provide a valid price.</div>
                     </div>
 
                     <div class="mb-2 col-md-8">
                         <label for="location" class="form-label">Location:</label>
-                        <input type="text" id="location" name="location" class="form-control" required><br>
-                        <div class="invalid-feedback">Location should be valid.</div>
+                        <input type="text" id="location" name="location" class="form-control" required>
+                        <div class="invalid-feedback">Please provide a location.</div>
                     </div>
                 </div>
 
                 <div class="mb-2">
                     <label for="country" class="form-label">Country:</label>
-                    <input type="text" id="country" name="country" class="form-control" required><br>
+                    <input type="text" id="country" name="country" class="form-control" required>
                     <div class="invalid-feedback">Country should be valid.</div>
-                </div>
+                </div> 
 
                 <button type="submit" class="btn btn-dark add-btn">Add</button>
             </form>
@@ -51,7 +52,7 @@
 
     <%- include('../includes/footer.ejs') %>
 
-    <!-- <script>
+    <script>
         // Example starter JavaScript for disabling form submissions if there are invalid fields
         (() => {
             'use strict'
@@ -71,5 +72,5 @@
                 }, false)
             })
         })()
-    </script> -->
+    </script>
 </body>
