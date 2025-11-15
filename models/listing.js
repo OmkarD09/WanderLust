@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Review = require('./review.js');
 
 // The main connection logic is in app.js, so you don't need it here.
 // async function main() {
@@ -36,7 +37,21 @@ const listingSchema = new mongoose.Schema({
   country: {
     type: String,
   },
+  reviews: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Review',
+      required: true,
+    }
+  ]
 });
+
+listingSchema.post('findOneAndDelete', async function(doc) {
+  if (doc) {
+    await Review.deleteMany({ _id: { $in: doc.reviews } });
+  }
+});
+   
 
 const Listing = mongoose.model('Listing', listingSchema);
 module.exports = Listing;

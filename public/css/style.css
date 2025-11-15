@@ -101,3 +101,11 @@ body a {
     color: white;
     border: none !important;
 }
+
+.card-review {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+    background-color: #f9f9f9;
+}

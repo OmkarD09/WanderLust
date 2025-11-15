@@ -9,7 +9,8 @@ const Listing = require('./models/listing.js');
 const ejsMate = require('ejs-mate');
 const wrapAsync = require('./utils/wrapAsync.js');
 const ExpressError = require('./utils/ExpressError.js');
-const { listingSchema } = require('./schema.js');
+const { listingSchema , reviewSchema} = require('./schema.js');
+const Review = require('./models/review.js');
 
 async function main() {
   await mongoose.connect('mongodb://127.0.0.1:27017/wanderlust');
@@ -32,6 +33,16 @@ main().then(() => {
 
 const validateListing = (req, res, next) => {
   let { error } = listingSchema.validate(req.body);
+  if (error) {
+    const msg = error.details.map(el => el.message).join(',');
+    throw new ExpressError(msg, 400);
+  } else {
+    next();
+  }
+};
+
+const validateReview = (req, res, next) => {
+  let { error } = reviewSchema.validate(req.body);
   if (error) {
     const msg = error.details.map(el => el.message).join(',');
     throw new ExpressError(msg, 400);
@@ -71,8 +82,17 @@ app.put('/listings/:id', validateListing,  wrapAsync(async (req, res) => {
 }));
 
 app.get('/listings/:id', wrapAsync(async (req, res) => {
-    const listing = await Listing.findById(req.params.id);
+    const listing = await Listing.findById(req.params.id).populate('reviews');
     res.render('listings/show.ejs', { listing });
+}));
+
+app.post('/listings/:id', validateReview, wrapAsync(async (req, res) => {
+  const review = new Review(req.body.review);
+  const listing = await Listing.findById(req.params.id);
+  listing.reviews.push(review);
+  await review.save();
+  await listing.save();
+  res.redirect(`/listings/${listing._id}`);
 }));
 
 app.delete('/listings/:id', wrapAsync(async (req, res) => {
@@ -81,9 +101,17 @@ app.delete('/listings/:id', wrapAsync(async (req, res) => {
     res.redirect('/listings');
 }));
 
+app.delete('/listings/:id/reviews/:reviewId', wrapAsync(async (req, res) => {
+    const { id, reviewId } = req.params;
+    await Listing.findByIdAndUpdate(id, { $pull: { reviews: reviewId } });
+    await Review.findByIdAndDelete(reviewId);
+    res.redirect(`/listings/${id}`);
+}));
+
+
 app.use((req, res, next) => {
   next(new ExpressError('Page Not Found', 404));
-  res.render('error.ejs', { err: err });
+  res.render('error.ejs', { error: err });
 });
 
 
