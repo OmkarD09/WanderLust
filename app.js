@@ -10,6 +10,8 @@ const ejsMate = require('ejs-mate');
 const wrapAsync = require('./utils/wrapAsync.js');
 const ExpressError = require('./utils/ExpressError.js');
 const { listingSchema } = require('./schema.js');
+const session = require('express-session');
+const flash = require('connect-flash');
 
 
 async function main() {
@@ -25,13 +27,37 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(methodOverride('_method'));
 
+
+const sessionOptions = {
+  secret: 'thisshouldbeabettersecret!',
+  resave: false,
+  saveUninitialized: true,
+  cookie: {
+    httpOnly: true,
+    expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
+    maxAge: 1000 * 60 * 60 * 24 * 7
+  }
+  
+};
+
+
+
+app.use(session(sessionOptions));
+app.use(flash());
+
+
+app.use((req, res, next) => {
+  res.locals.currentUser = req.user;
+  res.locals.success = req.flash('success');
+  res.locals.error = req.flash('error');
+  next();
+});
+
 main().then(() => {
   console.log('Connected to MongoDB');
 }).catch(err => {
   console.log(err);
 });
-
-
 
 app.use('/listings', require('./routes/listing.js'));
 
