@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Review = require('./review.js');
+const user = require('./user.js');
 
 // The main connection logic is in app.js, so you don't need it here.
 // async function main() {
@@ -7,6 +8,11 @@ const Review = require('./review.js');
 // }
 
 const listingSchema = new mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+  },
   title: {
     type: String,
   },
