@@ -8,7 +8,7 @@ const user = require('./user.js');
 // }
 
 const listingSchema = new mongoose.Schema({
-  user: {
+  owner: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true,

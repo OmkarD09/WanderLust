@@ -6,16 +6,10 @@ const { listingSchema } = require('../schema.js');
 const ExpressError = require('../utils/ExpressError.js');
 const Review = require('../models/review.js');
 const { isLoggedIn } = require('./middlewares.js');
+const { validateListing } = require('./middlewares.js');
+const { isOwner } = require('./middlewares.js');
 
-const validateListing = (req, res, next) => {
-  let { error } = listingSchema.validate(req.body);
-  if (error) {
-    const msg = error.details.map(el => el.message).join(',');
-    throw new ExpressError(msg, 400);
-  } else {
-    next();
-  }
-};
+
 
 
 
@@ -32,18 +26,18 @@ router.get('/new',isLoggedIn, (req, res) => {
     res.render('listings/new.ejs');
 });
 
-router.post('/', validateListing, wrapAsync(async (req, res, next) => {
-    const newListing = new Listing({ ...req.body.listing, user: req.user._id });
-  await newListing.save();
-  req.flash('success', 'Successfully created a new listing!');
-  res.redirect('/listings');
+router.post('/', isLoggedIn, validateListing, wrapAsync(async (req, res, next) => {
+    const newListing = new Listing({ ...req.body.listing, owner: req.user._id });
+    await newListing.save();
+    req.flash('success', 'Successfully created a new listing!');
+    res.redirect('/listings');
 }));
 
 // Mount review routes before /:id route to avoid route conflicts
 const reviewRouter = require('./review.js');
 router.use('/:id/reviews', reviewRouter);
 
-router.get("/:id/edit",isLoggedIn, wrapAsync(async (req, res) => {
+router.get("/:id/edit",isLoggedIn, isOwner, wrapAsync(async (req, res) => {
     const listing = await Listing.findById(req.params.id);
     if (!listing) {
         req.flash('error', 'Cannot find that listing!');
@@ -52,7 +46,7 @@ router.get("/:id/edit",isLoggedIn, wrapAsync(async (req, res) => {
     res.render('listings/edit.ejs', { listing });
 }));
 
-router.put('/:id',isLoggedIn, validateListing,  wrapAsync(async (req, res) => {
+router.put('/:id',isLoggedIn, isOwner, validateListing,  wrapAsync(async (req, res) => {
     const { id } = req.params;
     const listing = await Listing.findByIdAndUpdate(id, req.body.listing, { new: true, runValidators: true });
     req.flash('success', 'Successfully updated listing!');
@@ -63,7 +57,7 @@ router.put('/:id',isLoggedIn, validateListing,  wrapAsync(async (req, res) => {
 router.get('/:id', wrapAsync(async (req, res) => {
     const listing = await Listing.findById(req.params.id)
         .populate({ path: 'reviews', populate: { path: 'author' } })
-        .populate('user');
+        .populate('owner');
     if (!listing) {
         req.flash('error', 'Cannot find that listing!');
         return res.redirect('/listings');
