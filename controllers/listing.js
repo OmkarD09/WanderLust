@@ -1,0 +1,52 @@
+const Listing = require('../models/listing');
+
+module.exports.index = async (req, res) => {
+    const listings =  await Listing.find({});
+    res.render('listings/index.ejs', { listings });
+}
+
+module.exports.renderNewForm =  (req, res) => {
+    res.render('listings/new.ejs');
+}
+
+module.exports.createListing =  async (req, res, next) => {
+    const newListing = new Listing({ ...req.body.listing, owner: req.user._id });
+    await newListing.save();
+    req.flash('success', 'Successfully created a new listing!');
+    res.redirect('/listings');
+}
+
+module.exports.showListing =  async (req, res) => {
+    const listing = await Listing.findById(req.params.id)
+        .populate({ path: 'reviews', populate: { path: 'author' } })
+        .populate('owner');
+    if (!listing) {
+        req.flash('error', 'Cannot find that listing!');
+        return res.redirect('/listings');
+    }
+    res.render('listings/show.ejs', { listing });
+};
+
+module.exports.deleteListing = async (req, res) => {
+    const { id } = req.params;
+    await Listing.findByIdAndDelete(id);
+    req.flash('error', 'Successfully deleted listing!');
+    res.redirect('/listings');
+}
+
+module.exports.renderEditForm = async (req, res) => {
+    const listing = await Listing.findById(req.params.id);
+    if (!listing) {
+        req.flash('error', 'Cannot find that listing!');
+        return res.redirect('/listings');
+    }
+    res.render('listings/edit.ejs', { listing });
+}
+
+module.exports.updateListing = async (req, res) => {
+    const { id } = req.params;
+    const listing = await Listing.findByIdAndUpdate(id, req.body.listing, { new: true, runValidators: true });
+    req.flash('success', 'Successfully updated listing!');
+
+    res.redirect(`/listings/${listing._id}`);
+}

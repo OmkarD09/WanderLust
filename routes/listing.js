@@ -8,6 +8,7 @@ const Review = require('../models/review.js');
 const { isLoggedIn } = require('./middlewares.js');
 const { validateListing } = require('./middlewares.js');
 const { isOwner } = require('./middlewares.js');
+const listingController = require('../controllers/listing.js');
 
 
 
@@ -17,62 +18,24 @@ const { isOwner } = require('./middlewares.js');
 //   res.send('Hello World!');
 // });
 
-router.get('/', wrapAsync(async (req, res) => {
-    const listings =  await Listing.find({});
-    res.render('listings/index.ejs', { listings });
-}));
+router.get('/', wrapAsync(listingController.index));
 
-router.get('/new',isLoggedIn, (req, res) => {
-    res.render('listings/new.ejs');
-});
+router.get('/new',isLoggedIn, listingController.renderNewForm);
 
-router.post('/', isLoggedIn, validateListing, wrapAsync(async (req, res, next) => {
-    const newListing = new Listing({ ...req.body.listing, owner: req.user._id });
-    await newListing.save();
-    req.flash('success', 'Successfully created a new listing!');
-    res.redirect('/listings');
-}));
+router.post('/', isLoggedIn, validateListing, wrapAsync( listingController.createListing ));
 
 // Mount review routes before /:id route to avoid route conflicts
 const reviewRouter = require('./review.js');
 router.use('/:id/reviews', reviewRouter);
 
-router.get("/:id/edit",isLoggedIn, isOwner, wrapAsync(async (req, res) => {
-    const listing = await Listing.findById(req.params.id);
-    if (!listing) {
-        req.flash('error', 'Cannot find that listing!');
-        return res.redirect('/listings');
-    }
-    res.render('listings/edit.ejs', { listing });
-}));
+router.get("/:id/edit",isLoggedIn, isOwner, wrapAsync(listingController.renderEditForm));
 
-router.put('/:id',isLoggedIn, isOwner, validateListing,  wrapAsync(async (req, res) => {
-    const { id } = req.params;
-    const listing = await Listing.findByIdAndUpdate(id, req.body.listing, { new: true, runValidators: true });
-    req.flash('success', 'Successfully updated listing!');
+router.put('/:id',isLoggedIn, isOwner, validateListing,  wrapAsync(listingController.updateListing));
 
-    res.redirect(`/listings/${listing._id}`);
-}));
-
-router.get('/:id', wrapAsync(async (req, res) => {
-    const listing = await Listing.findById(req.params.id)
-        .populate({ path: 'reviews', populate: { path: 'author' } })
-        .populate('owner');
-    if (!listing) {
-        req.flash('error', 'Cannot find that listing!');
-        return res.redirect('/listings');
-    }
-    res.render('listings/show.ejs', { listing });
-}));
+router.get('/:id', wrapAsync(listingController.showListing));
 
 
-
-router.delete('/:id', isLoggedIn, wrapAsync(async (req, res) => {
-    const { id } = req.params;
-    await Listing.findByIdAndDelete(id);
-    req.flash('error', 'Successfully deleted listing!');
-    res.redirect('/listings');
-}));
+router.delete('/:id', isLoggedIn, isOwner, wrapAsync(listingController.deleteListing));
 
 
 module.exports = router;
