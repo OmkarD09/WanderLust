@@ -18,6 +18,8 @@ const listingController = require('../controllers/listing.js');
 //   res.send('Hello World!');
 // });
 
+
+
 router.get('/', wrapAsync(listingController.index));
 
 router.get('/new',isLoggedIn, listingController.renderNewForm);
