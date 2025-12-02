@@ -6,7 +6,7 @@ const reviewSchema = new mongoose.Schema({
         required: true,
     },
     rating: {
-        type: Number,
+        type: mongoose.Schema.Types.Mixed,
         min: 1,
         max: 5,
         required: true,

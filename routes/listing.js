@@ -9,7 +9,7 @@ const { isLoggedIn } = require('./middlewares.js');
 const { validateListing } = require('./middlewares.js');
 const { isOwner } = require('./middlewares.js');
 const listingController = require('../controllers/listing.js');
-
+const reviewRouter = require('./review.js');
 
 
 
@@ -18,26 +18,28 @@ const listingController = require('../controllers/listing.js');
 //   res.send('Hello World!');
 // });
 
+router.route("/new")
+  .get(isLoggedIn, listingController.renderNewForm);
+
+router.route('/')
+  .get(wrapAsync(listingController.index))
+  .post(isLoggedIn, validateListing, wrapAsync(listingController.createListing));
 
 
-router.get('/', wrapAsync(listingController.index));
 
-router.get('/new',isLoggedIn, listingController.renderNewForm);
+router.route('/:id')
+  .get(wrapAsync(listingController.showListing))
+  .put(isLoggedIn, isOwner, validateListing,  wrapAsync(listingController.updateListing))
+  .delete(isLoggedIn, isOwner, wrapAsync(listingController.deleteListing));
 
-router.post('/', isLoggedIn, validateListing, wrapAsync( listingController.createListing ));
+
 
 // Mount review routes before /:id route to avoid route conflicts
-const reviewRouter = require('./review.js');
+
 router.use('/:id/reviews', reviewRouter);
 
 router.get("/:id/edit",isLoggedIn, isOwner, wrapAsync(listingController.renderEditForm));
 
-router.put('/:id',isLoggedIn, isOwner, validateListing,  wrapAsync(listingController.updateListing));
-
-router.get('/:id', wrapAsync(listingController.showListing));
-
-
-router.delete('/:id', isLoggedIn, isOwner, wrapAsync(listingController.deleteListing));
 
 
 module.exports = router;
