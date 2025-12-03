@@ -10,7 +10,17 @@ module.exports.renderNewForm =  (req, res) => {
 }
 
 module.exports.createListing =  async (req, res, next) => {
-    const newListing = new Listing({ ...req.body.listing, owner: req.user._id });
+    const listingData = { ...req.body.listing, owner: req.user._id };
+    
+    // Handle image upload from Cloudinary
+    if (req.file) {
+        listingData.image = {
+            url: req.file.path,
+            filename: req.file.filename
+        };
+    }
+    
+    const newListing = new Listing(listingData);
     await newListing.save();
     req.flash('success', 'Successfully created a new listing!');
     res.redirect('/listings');
@@ -45,7 +55,16 @@ module.exports.renderEditForm = async (req, res) => {
 
 module.exports.updateListing = async (req, res) => {
     const { id } = req.params;
-    const listing = await Listing.findByIdAndUpdate(id, req.body.listing, { new: true, runValidators: true });
+
+    // Handle image upload from Cloudinary
+    if(typeof req.file !== 'undefined') {
+        req.body.listing.image = {
+            url: req.file.path,
+            filename: req.file.filename
+        };
+    }
+
+    const listing = await Listing.findByIdAndUpdate(id, { ...req.body.listing }, { new: true, runValidators: true });
     req.flash('success', 'Successfully updated listing!');
 
     res.redirect(`/listings/${listing._id}`);
