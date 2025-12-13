@@ -10,10 +10,102 @@
           <a class="nav-link" href="/listings">Explore</a>
         </li>
       </ul>
-      <form class="d-flex me-auto" role="search">
-        <input class="form-control me-2 search-input" type="search" placeholder="Search" aria-label="Search"/>
+      <form class="d-flex me-auto" role="search" action="/listings/search" method="GET" id="searchForm">
+        <input class="form-control me-2 search-input" type="search" name="q" id="searchInput" placeholder="Search listings..." aria-label="Search" autocomplete="off" <% if (typeof searchQuery !== 'undefined' && searchQuery) { %>value="<%= searchQuery %>"<% } %>/>
         <button class="btn btn-outline-success" type="submit">Search</button>
         </form>
+        
+        <script>
+            (function() {
+                const searchInput = document.getElementById('searchInput');
+                const searchForm = document.getElementById('searchForm');
+                let searchTimeout;
+                let isUserTyping = false;
+                let lastQuery = '';
+                
+                if (searchInput && searchForm) {
+                    // Store cursor position and focus state
+                    searchInput.addEventListener('focus', function() {
+                        isUserTyping = true;
+                    });
+                    
+                    searchInput.addEventListener('blur', function() {
+                        // Small delay to check if blur was caused by redirect
+                        setTimeout(function() {
+                            isUserTyping = false;
+                        }, 100);
+                    });
+                    
+                    // Real-time search as user types (debounced)
+                    searchInput.addEventListener('input', function(e) {
+                        const query = e.target.value;
+                        const queryTrimmed = query.trim();
+                        lastQuery = query;
+                        isUserTyping = true;
+                        
+                        // Clear previous timeout
+                        clearTimeout(searchTimeout);
+                        
+                        // Only auto-search if we're on listings pages
+                        if (!window.location.pathname.includes('/listings')) {
+                            return;
+                        }
+                        
+                        // If query is empty, redirect to all listings after short delay
+                        if (queryTrimmed === '') {
+                            searchTimeout = setTimeout(() => {
+                                window.location.href = '/listings';
+                            }, 400);
+                            return;
+                        }
+                        
+                        // Debounce search - wait 400ms after user stops typing before searching
+                        searchTimeout = setTimeout(() => {
+                            isUserTyping = false;
+                            const currentQuery = searchInput.value.trim();
+                            window.location.href = '/listings/search?q=' + encodeURIComponent(currentQuery);
+                        }, 400);
+                    });
+                    
+                    // Handle form submission (Enter key or button click) - works from any page
+                    searchForm.addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        clearTimeout(searchTimeout);
+                        isUserTyping = false;
+                        const query = searchInput.value.trim();
+                        if (query) {
+                            window.location.href = '/listings/search?q=' + encodeURIComponent(query);
+                        } else {
+                            window.location.href = '/listings';
+                        }
+                    });
+                    
+                    // Restore focus and cursor position after page load if on listings pages
+                    function restoreFocus() {
+                        if (window.location.pathname.includes('/listings')) {
+                            const input = document.getElementById('searchInput');
+                            if (input) {
+                                input.focus();
+                                // Move cursor to end of input
+                                const length = input.value.length;
+                                input.setSelectionRange(length, length);
+                            }
+                        }
+                    }
+                    
+                    // Try multiple times to ensure focus is restored
+                    if (document.readyState === 'loading') {
+                        document.addEventListener('DOMContentLoaded', restoreFocus);
+                    } else {
+                        // DOM already loaded
+                        restoreFocus();
+                    }
+                    
+                    // Also try after a very short delay as backup
+                    setTimeout(restoreFocus, 50);
+                }
+            })();
+        </script>
         </div>
 
         <div class="navbar-nav ms-auto">

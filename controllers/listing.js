@@ -9,6 +9,28 @@ module.exports.index = async (req, res) => {
     res.render('listings/index.ejs', { listings });
 }
 
+module.exports.search = async (req, res) => {
+    const { q } = req.query;
+    
+    if (!q || q.trim() === '') {
+        return res.redirect('/listings');
+    }
+    
+    // Search in title, description, location, and country
+    const searchRegex = new RegExp(q, 'i'); // Case-insensitive search
+    
+    const listings = await Listing.find({
+        $or: [
+            { title: searchRegex },
+            { description: searchRegex },
+            { location: searchRegex },
+            { country: searchRegex }
+        ]
+    });
+    
+    res.render('listings/index.ejs', { listings, searchQuery: q, categoryTitle: `Search results for "${q}"` });
+}
+
 module.exports.filterByCategory = async (req, res) => {
     const { category } = req.params;
     // Decode URL-encoded category name (handles spaces like "Iconic Cities")

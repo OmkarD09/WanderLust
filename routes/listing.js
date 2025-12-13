@@ -24,6 +24,7 @@ const upload = multer({ storage });
 router.route("/new")
   .get(isLoggedIn, listingController.renderNewForm);
 
+router.get('/search', wrapAsync(listingController.search));
 router.get('/category/:category', wrapAsync(listingController.filterByCategory));
 
 router.route('/')

@@ -4,11 +4,72 @@
     
     #filters {
         display: flex;
-        justify-content: space-between;
+        justify-content: flex-start;
+        align-items: center;
         gap: 0.5rem;
         margin-top: 1rem;
         margin-bottom: 1rem;
         flex-wrap: wrap;
+        position: relative;
+    }
+
+    .tax-switch-container {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-left: auto;
+        white-space: nowrap;
+    }
+
+    .tax-switch {
+        position: relative;
+        display: inline-block;
+        width: 44px;
+        height: 22px;
+    }
+
+    .tax-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .tax-slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 24px;
+    }
+
+    .tax-slider:before {
+        position: absolute;
+        content: "";
+        height: 16px;
+        width: 16px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
+
+    input:checked + .tax-slider {
+        background-color: #2196F3;
+    }
+
+    input:checked + .tax-slider:before {
+        transform: translateX(22px);
+    }
+
+    .tax-label {
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: #333;
     }
 
     .filter {
@@ -25,24 +86,24 @@
     }
 
     .filter:hover {
-        transform: scale(1.1);
+        transform: scale(1.05);
     }
 
     .filter div {
         background-color: #f0f0f0;
         border-radius: 50%;
-        width: 32px;
-        height: 32px;
+        width: 28px;
+        height: 28px;
         display: flex;
         justify-content: center;
         align-items: center;
-        margin-bottom: 0.4rem;
-        font-size: 1rem;
+        margin-bottom: 0.3rem;
+        font-size: 0.9rem;
     }
 
     .filter p {
         margin: 0;
-        font-size: 0.85rem;
+        font-size: 0.75rem;
         font-weight: bold;
         text-align: center;
         width: 100%;
@@ -106,6 +167,14 @@
             <div><i class="fa-solid fa-cow"></i></div>
             <p>Farms</p>
         </a>
+        
+        <div class="tax-switch-container">
+            <span class="tax-label">Include 18% GST</span>
+            <label class="tax-switch">
+                <input type="checkbox" id="gstToggle">
+                <span class="tax-slider"></span>
+            </label>
+        </div>
     </div>
     <!-- <h3>All Listings</h3> -->
     <!-- <form action="/listings/new" method="GET">
@@ -121,7 +190,10 @@
                         <div class="card-body">
                             <p class="card-text">
                                 <b><%= listing.title %></b> <br>
-                                &#8377;<%= listing.price ? listing.price.toLocaleString("en-IN") : 'N/A' %> <br>
+                                <span class="price-display" data-base-price="<%= listing.price || 0 %>">
+                                    &#8377;<%= listing.price ? listing.price.toLocaleString("en-IN") : 'N/A' %>
+                                </span>
+                                <span class="gst-text" style="display: none; font-size: 0.85em; color: #666;"> (incl. GST)</span>
                             </p>
                         </div>
                     </div>
@@ -144,5 +216,36 @@
     <% } %> -->
 
     <%- include('../includes/footer.ejs') %>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const gstToggle = document.getElementById('gstToggle');
+            const priceDisplays = document.querySelectorAll('.price-display');
+            const gstTexts = document.querySelectorAll('.gst-text');
+            const GST_RATE = 0.18; // 18% GST
+
+            function updatePrices() {
+                priceDisplays.forEach((priceDisplay, index) => {
+                    const basePrice = parseFloat(priceDisplay.getAttribute('data-base-price'));
+                    if (isNaN(basePrice) || basePrice === 0) {
+                        return;
+                    }
+
+                    if (gstToggle.checked) {
+                        // Show price with GST
+                        const priceWithGST = basePrice * (1 + GST_RATE);
+                        priceDisplay.innerHTML = '&#8377;' + Math.round(priceWithGST).toLocaleString("en-IN");
+                        gstTexts[index].style.display = 'inline';
+                    } else {
+                        // Show base price without GST
+                        priceDisplay.innerHTML = '&#8377;' + basePrice.toLocaleString("en-IN");
+                        gstTexts[index].style.display = 'none';
+                    }
+                });
+            }
+
+            gstToggle.addEventListener('change', updatePrices);
+        });
+    </script>
 
 </body>
