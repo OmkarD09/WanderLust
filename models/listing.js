@@ -37,6 +37,9 @@ const listingSchema = new mongoose.Schema({
   price: {
     type: Number,
   },
+  category: {
+    type: String,
+  },  
   location: {
     type: String,
   },

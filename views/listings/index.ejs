@@ -1,26 +1,140 @@
 <% layout('/layouts/boilerplate') %>
 
+<style>
+    
+    #filters {
+        display: flex;
+        justify-content: space-between;
+        gap: 0.5rem;
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .filter {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        cursor: pointer;
+        transition: transform 0.2s;
+        flex: 1;
+        min-width: 0;
+        margin-bottom: 1rem;
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .filter:hover {
+        transform: scale(1.1);
+    }
+
+    .filter div {
+        background-color: #f0f0f0;
+        border-radius: 50%;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 0.4rem;
+        font-size: 1rem;
+    }
+
+    .filter p {
+        margin: 0;
+        font-size: 0.85rem;
+        font-weight: bold;
+        text-align: center;
+        width: 100%;
+        word-wrap: break-word;
+    }
+</style>
+
 <body>
-    <h3>All Listings</h3>
+    <% if (typeof categoryTitle !== 'undefined' && categoryTitle) { %>
+        <div class="d-flex justify-content-between align-items-center mt-3 mb-3">
+            <h3><%= categoryTitle %> Listings</h3>
+            <a href="/listings" class="btn btn-secondary">View All Listings</a>
+        </div>
+    <% } %>
+    <div id="filters">
+        <a href="/listings/category/trending" class="filter">
+            <div><i class="fa-solid fa-fire"></i></div>
+            <p>Trending</p>
+        </a>
+        <a href="/listings/category/near-me" class="filter">
+            <div><i class="fa-solid fa-location-dot"></i></div>
+            <p>Near Me</p> 
+        </a>
+        <a href="/listings/category/budget" class="filter">
+            <div><i class="fa-solid fa-tags"></i></div>
+            <p>Budget</p>
+        </a>
+        <a href="/listings/category/Mountains" class="filter">
+            <div><i class="fa-solid fa-mountain"></i></div>
+            <p>Mountains</p>
+        </a>
+        <a href="/listings/category/Beaches" class="filter">
+            <div><i class="fa-solid fa-umbrella-beach"></i></div>
+            <p>Beaches</p>
+        </a>
+        <a href="/listings/category/Iconic Cities" class="filter">
+            <div><i class="fa-solid fa-city"></i></div>
+            <p>Iconic Cities</p>
+        </a>
+        <a href="/listings/category/Nature" class="filter">
+            <div><i class="fa-solid fa-tree"></i></div>
+            <p>Nature</p>
+        </a>
+        <a href="/listings/category/Amazing Pools" class="filter">
+            <div><i class="fa-solid fa-person-swimming"></i></div>
+            <p>Amazing Pools</p>
+        </a>
+        <a href="/listings/category/Camping" class="filter">
+            <div><i class="fa-solid fa-campground"></i></div>
+            <p>Camping</p>
+        </a>
+        <a href="/listings/category/Castles" class="filter">
+            <div><i class="fa-brands fa-fort-awesome"></i></div>
+            <p>Castles</p>
+        </a>
+        <a href="/listings/category/Skiing" class="filter">
+            <div><i class="fa-solid fa-skiing"></i></div>
+            <p>Skiing</p>
+        </a>
+        <a href="/listings/category/Farms" class="filter">
+            <div><i class="fa-solid fa-cow"></i></div>
+            <p>Farms</p>
+        </a>
+    </div>
+    <!-- <h3>All Listings</h3> -->
     <!-- <form action="/listings/new" method="GET">
         <button type="submit">Create New Listing</button>
     </form method> -->
-    <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 mt-3">
- <% for(let listing of listings) { %>
-    <a href="/listings/<%= listing._id %>">
-    <div class="card col listing-card">
-                <img src="<%= listing.image.url %>" class="card-img-top" alt="listing_image" style="height: 20rem;">
-                <div class="card-img-overlay"></div>
-                <div class="card-body">
-                    <p class="card-text">
-                    <b><%= listing.title %></b> <br>
-                    &#8377;<%= listing.price ? listing.price.toLocaleString("en-IN") : 'N/A' %> <br>
-                </p>
-                </div>
-            </div>
-</a>
+    <% if (listings && listings.length > 0) { %>
+        <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 mt-3">
+            <% for(let listing of listings) { %>
+                <a href="/listings/<%= listing._id %>">
+                    <div class="card col listing-card">
+                        <img src="<%= listing.image.url %>" class="card-img-top" alt="listing_image" style="height: 20rem;">
+                        <div class="card-img-overlay"></div>
+                        <div class="card-body">
+                            <p class="card-text">
+                                <b><%= listing.title %></b> <br>
+                                &#8377;<%= listing.price ? listing.price.toLocaleString("en-IN") : 'N/A' %> <br>
+                            </p>
+                        </div>
+                    </div>
+                </a>
+            <% } %>
+        </div>
+    <% } else { %>
+        <div class="alert alert-info mt-4" role="alert">
+            <h5>No listings found</h5>
+            <p>There are no listings available in this category at the moment.</p>
+            <a href="/listings" class="btn btn-primary">View All Listings</a>
+        </div>
     <% } %>
-    </div>
 
 
     <!-- <% for(let listing of listings) { %>

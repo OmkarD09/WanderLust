@@ -9,6 +9,45 @@ module.exports.index = async (req, res) => {
     res.render('listings/index.ejs', { listings });
 }
 
+module.exports.filterByCategory = async (req, res) => {
+    const { category } = req.params;
+    // Decode URL-encoded category name (handles spaces like "Iconic Cities")
+    const decodedCategory = decodeURIComponent(category);
+    
+    let query = {};
+    let categoryTitle = decodedCategory;
+    
+    // Handle special filter cases
+    switch(decodedCategory.toLowerCase()) {
+        case 'trending':
+            // Show listings sorted by number of reviews (most popular)
+            const allListings = await Listing.find({}).populate('reviews');
+            const listings = allListings.sort((a, b) => b.reviews.length - a.reviews.length);
+            return res.render('listings/index.ejs', { listings, categoryTitle: 'Trending' });
+            
+        case 'budget':
+            // Show listings with price <= 1500
+            query = { price: { $lte: 1500 } };
+            categoryTitle = 'Budget-Friendly';
+            break;
+            
+        case 'near-me':
+        case 'near me':
+            // For now, show all listings. Could be enhanced with location-based filtering
+            query = {};
+            categoryTitle = 'Near Me';
+            break;
+            
+        default:
+            // Regular category filtering - use decoded category name
+            query = { category: decodedCategory };
+            break;
+    }
+    
+    const listings = await Listing.find(query);
+    res.render('listings/index.ejs', { listings, categoryTitle });
+}
+
 module.exports.renderNewForm =  (req, res) => {
     res.render('listings/new.ejs');
 }
