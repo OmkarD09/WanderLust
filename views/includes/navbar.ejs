@@ -5,15 +5,121 @@
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+      <ul class="navbar-nav mb-2 mb-lg-0">
         <li class="nav-item">
           <a class="nav-link" href="/listings">Explore</a>
         </li>
       </ul>
-      <form class="d-flex me-auto" role="search" action="/listings/search" method="GET" id="searchForm">
+      <form class="d-flex search-form" role="search" action="/listings/search" method="GET" id="searchForm">
         <input class="form-control me-2 search-input" type="search" name="q" id="searchInput" placeholder="Search listings..." aria-label="Search" autocomplete="off" <% if (typeof searchQuery !== 'undefined' && searchQuery) { %>value="<%= searchQuery %>"<% } %>/>
-        <button class="btn btn-outline-success" type="submit">Search</button>
+        <button class="btn search-btn" type="submit">
+          <i class="fa-solid fa-magnifying-glass"></i> <span>Search</span>
+        </button>
         </form>
+        
+        <style>
+          
+          .search-form {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            max-width: 400px;
+            width: 400px;
+            z-index: 10;
+          }
+          
+          @media (min-width: 992px) {
+            .navbar-collapse {
+              display: flex !important;
+              justify-content: space-between;
+              align-items: center;
+              width: 100%;
+            }
+            
+            .navbar-nav:first-child {
+              flex: 0 0 auto;
+            }
+            
+            .search-form {
+              position: absolute;
+              left: 50%;
+              transform: translateX(-50%);
+              max-width: 400px;
+              width: 400px;
+            }
+            
+            .navbar-nav.ms-auto {
+              flex: 0 0 auto;
+            }
+          }
+          
+          @media (max-width: 991px) {
+            .search-form {
+              position: static;
+              transform: none;
+              left: auto;
+              width: 100%;
+              max-width: 100%;
+              margin: 0.5rem 0;
+            }
+          }
+          
+          .search-input {
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            padding: 0.5rem 1.25rem;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+          }
+          
+          .search-input:focus {
+            border-color: #fe424d;
+            box-shadow: 0 0 0 0.2rem rgba(254, 66, 77, 0.15);
+            outline: none;
+          }
+          
+          .search-btn {
+            background-color: #fe424d;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 0.5rem 1.5rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+          }
+          
+          .search-btn:hover {
+            background-color: #e63a44;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(254, 66, 77, 0.3);
+            color: white;
+          }
+          
+          .search-btn:active {
+            transform: translateY(0);
+          }
+          
+          .search-btn i {
+            margin-right: 0.5rem;
+          }
+          
+          @media (max-width: 768px) {
+            .search-form {
+              max-width: 100%;
+              width: 100%;
+            }
+            
+            .search-btn span {
+              display: none;
+            }
+            
+            .search-btn {
+              padding: 0.5rem 1rem;
+              min-width: auto;
+            }
+          }
+        </style>
         
         <script>
             (function() {
