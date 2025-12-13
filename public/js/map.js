@@ -9,4 +9,10 @@
 
             const marker = new mapboxgl.Marker( {color: 'red'})
             .setLngLat(JSON.parse(coordinates))
+            .setPopup(
+                new mapboxgl.Popup({ offset: 25 }) // add popups
+                .setHTML(
+                    `<h5>${ listingLocation }</h5><p> Welcome to WanderLust </p>`
+                )
+            )
             .addTo(map);
