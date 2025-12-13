@@ -22,17 +22,17 @@ async function main() {
 
 const initDB = async () => {
   await Listing.deleteMany({});
-  
+
   // Check if Mapbox token is available
   if (!mapboxToken) {
     console.error('MAP_TOKEN is not set in environment variables. Cannot geocode listings.');
     console.error('Please ensure your .env file exists in the project root and contains: MAP_TOKEN=your_token_here');
     process.exit(1);
   }
-  
+
   // Initialize Mapbox geocoding client
   const geocodingClient = mbxGeocoding({ accessToken: mapboxToken });
-  
+
   // Geocode each listing and add geometry
   const listingsWithGeometry = await Promise.all(
     initData.data.map(async (obj) => {
@@ -42,7 +42,7 @@ const initDB = async () => {
           query: `${obj.location}, ${obj.country}`,
           limit: 1,
         }).send();
-        
+
         // Extract geometry from the first result
         if (response.body.features && response.body.features.length > 0) {
           obj.geometry = response.body.features[0].geometry;
@@ -63,11 +63,11 @@ const initDB = async () => {
           coordinates: [0, 0]
         };
       }
-      
+
       return { ...obj, owner: "6920c1c2503baf285a939352" };
     })
   );
-  
+
   await Listing.insertMany(listingsWithGeometry);
   console.log("data was initialized with geometry");
 };
