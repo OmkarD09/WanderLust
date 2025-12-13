@@ -16,6 +16,7 @@ const wrapAsync = require('./utils/wrapAsync.js');
 const ExpressError = require('./utils/ExpressError.js');
 const { listingSchema } = require('./schema.js');
 const session = require('express-session');
+const { MongoStore } = require('connect-mongo');
 const flash = require('connect-flash');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
@@ -44,8 +45,21 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(methodOverride('_method'));
 
+const store = MongoStore.create({
+  mongoUrl: dbUrl,
+  touchAfter: 24 * 60 * 60,
+  crypto: {
+    secret: 'thisshouldbeabettersecret!'
+  }
+});
+
+store.on("error", function(e) {
+  console.log("SESSION STORE ERROR", e)
+})
+
 
 const sessionOptions = {
+  store: store,
   secret: 'thisshouldbeabettersecret!',
   resave: false,
   saveUninitialized: true,
@@ -56,6 +70,10 @@ const sessionOptions = {
   }
   
 };
+
+
+
+
 
 
 
