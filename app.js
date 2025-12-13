@@ -25,12 +25,14 @@ const reviewRouter = require('./routes/review.js');
 const ListingRouter = require('./routes/listing.js');
 const multer = require('multer');
 const upload = multer({ dest: 'uploads/' });
+const dbUrl = process.env.ATLASDB_URL;
+
 
 
 
 
 async function main() {
-  await mongoose.connect('mongodb://127.0.0.1:27017/wanderlust');
+  await mongoose.connect(dbUrl);
 }
 
 app.set("views", path.join(__dirname, 'views'));
@@ -62,7 +64,46 @@ app.use(flash());
 
 app.use(passport.initialize());
 app.use(passport.session());
-passport.use(new LocalStrategy(User.authenticate()));
+
+// Custom LocalStrategy to allow login with username or email
+passport.use(new LocalStrategy({
+    usernameField: 'username', // This is the field name from the form
+    passwordField: 'password'
+}, async (input, password, done) => {
+    try {
+        // Check if input is an email (contains @)
+        const isEmail = input.includes('@');
+        
+        let user;
+        if (isEmail) {
+            // Find user by email
+            user = await User.findOne({ email: input });
+            if (!user) {
+                return done(null, false, { message: 'Invalid email or password' });
+            }
+            // Use the username for authentication (passport-local-mongoose uses username)
+            const username = user.username;
+            return User.authenticate()(username, password, (err, authenticatedUser) => {
+                if (err) return done(err);
+                if (!authenticatedUser) return done(null, false, { message: 'Invalid email or password' });
+                return done(null, authenticatedUser);
+            });
+        } else {
+            // Find user by username and authenticate directly
+            user = await User.findOne({ username: input });
+            if (!user) {
+                return done(null, false, { message: 'Invalid username or password' });
+            }
+            return User.authenticate()(input, password, (err, authenticatedUser) => {
+                if (err) return done(err);
+                if (!authenticatedUser) return done(null, false, { message: 'Invalid username or password' });
+                return done(null, authenticatedUser);
+            });
+        }
+    } catch (err) {
+        return done(err);
+    }
+}));
 
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
