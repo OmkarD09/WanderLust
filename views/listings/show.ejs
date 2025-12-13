@@ -1,4 +1,7 @@
 <% layout('/layouts/boilerplate') %>
+<script>
+    const mapToken = '<%= process.env.MAP_TOKEN %>';
+</script>
 <body>
     <div class="row mt-3">
         <div class="col-8 offset-2">
@@ -106,25 +109,20 @@
         <hr>
         <div class = "reviews col-6 offset-3 mb-3">
             <h3>Where you'll be</h3>
-            <div id="map" style="height: 300px;"></div>
+            <div id="map"></div>
         </div>
 
         <br>
         <br>
     </div>
 
+    <script src="/js/map.js"></script>
+
 
 
 
     <%- include('../includes/footer.ejs') %>   
-    <script>
-        mapboxgl.accessToken = 'MAP_TOKEN';
-        const map = new mapboxgl.Map({
-            container: 'map', // container ID
-            center: [-74.5, 40], // starting position [lng, lat]. Note that lat must be set between -90 and 90
-            zoom: 9 // starting zoom
-            });
-    </script>
+
 
     <script>
         // Example starter JavaScript for disabling form submissions if there are invalid fields

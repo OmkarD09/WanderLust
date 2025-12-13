@@ -49,7 +49,18 @@ const listingSchema = new mongoose.Schema({
       ref: 'Review',
       required: true,
     }
-  ]
+  ],
+  geometry: {
+    type: {
+      type: String,
+      enum: ['Point'],
+      required: true
+    },
+    coordinates: {
+      type: [Number],
+      required: true
+    }
+  }
 });
 
 listingSchema.post('findOneAndDelete', async function(doc) {

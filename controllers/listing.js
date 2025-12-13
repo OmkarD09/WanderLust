@@ -1,4 +1,8 @@
+const { response } = require('express');
 const Listing = require('../models/listing');
+const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
+const mapboxToken = process.env.MAP_TOKEN;
+const geocodingClient = mbxGeocoding({ accessToken: mapboxToken });
 
 module.exports.index = async (req, res) => {
     const listings =  await Listing.find({});
@@ -10,6 +14,13 @@ module.exports.renderNewForm =  (req, res) => {
 }
 
 module.exports.createListing =  async (req, res, next) => {
+
+    let coordinates = await geocodingClient.forwardGeocode({
+        query: `${req.body.listing.location}, ${req.body.listing.country}`,
+        limit: 1,
+    }).send();
+    
+    
     const listingData = { ...req.body.listing, owner: req.user._id };
     
     // Handle image upload from Cloudinary
@@ -19,6 +30,10 @@ module.exports.createListing =  async (req, res, next) => {
             filename: req.file.filename
         };
     }
+
+    listingData.geometry = coordinates.body.features[0].geometry;
+
+    console.log(listingData.geometry);
     
     const newListing = new Listing(listingData);
     await newListing.save();
@@ -27,6 +42,7 @@ module.exports.createListing =  async (req, res, next) => {
 }
 
 module.exports.showListing =  async (req, res) => {
+
     const listing = await Listing.findById(req.params.id)
         .populate({ path: 'reviews', populate: { path: 'author' } })
         .populate('owner');
