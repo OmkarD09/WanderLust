@@ -79,21 +79,37 @@ SECRET_KEY=your_session_secret_key
 6.  **Access the App:**
     Open your browser and visit `http://localhost:8080`.
 
-## 📂 Project Structure
-
+## 🏗️ Project Structure
 ```
 WanderLust/
-├── controllers/    # Route controllers
-├── init/           # Database initialization scripts
-├── models/         # Mongoose models (Listing, User, Review)
-├── public/         # Static files (CSS, JS, Images)
-├── routes/         # Express routes
-├── utils/          # Utility functions and error handling
-├── views/          # EJS templates
-├── app.js          # Main application entry point
-├── cloudConfig.js  # Cloudinary configuration
-├── schema.js       # Joi validation schemas
-└── ...
+├── controllers/        # Route controllers (MVC pattern)
+│   ├── listing.js
+│   ├── reviews.js
+│   └── users.js
+├── models/            # Mongoose schemas
+│   ├── listing.js
+│   ├── review.js
+│   └── user.js
+├── routes/            # Express routes
+│   ├── listing.js
+│   ├── review.js
+│   ├── user.js
+│   └── middlewares.js
+├── views/             # EJS templates
+│   ├── layouts/
+│   ├── listings/
+│   ├── users/
+│   └── includes/
+├── public/            # Static assets
+│   ├── css/
+│   └── js/
+├── utils/             # Utility functions
+│   ├── ExpressError.js
+│   └── wrapAsync.js
+├── init/              # Database initialization
+├── cloudConfig.js     # Cloudinary configuration
+├── schema.js          # Joi validation schemas
+└── app.js             # Main application file
 ```
 
 ## 🤝 Contributing
