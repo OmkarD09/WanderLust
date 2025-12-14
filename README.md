@@ -50,7 +50,7 @@ SECRET_KEY=your_session_secret_key
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/yourusername/WanderLust.git
+    git clone https://github.com/OmkarD09/WanderLust.git
     cd WanderLust
     ```
 
