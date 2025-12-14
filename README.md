@@ -2,6 +2,9 @@
 
 WanderLust is a comprehensive vacation rental platform that allows users to explore, book, and host unique accommodations around the world. Built with a robust tech stack, it features secure authentication, interactive maps, and a seamless user experience.
 
+## Project Link
+[Live Demo](https://wanderlust-h8zw.onrender.com/listings)
+
 ## 🚀 Features
 
 *   **User Authentication**: Secure signup and login functionality using Passport.js.
